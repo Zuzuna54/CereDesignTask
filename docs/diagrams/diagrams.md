@@ -23,7 +23,7 @@ This document serves as an index for all the Mermaid diagrams created for the Un
 
 ## How to Use These Diagrams
 
-These diagrams are designed to be viewed in sequence from 1 to 14, as they progress from high-level architecture to implementation details. However, they can also be consulted individually based on specific needs:
+These diagrams are designed to be viewed in sequence from 1 to 11, as they progress from high-level architecture to implementation details. However, they can also be consulted individually based on specific needs:
 
 - For a general overview of the system: Start with Diagram 1
 - For detailed component descriptions: See Diagram 0
