@@ -6,8 +6,8 @@ This document serves as an index for all the Mermaid diagrams created for the Un
 
 | #   | Diagram Name                                                         | Description                                                          | Requirements Covered |
 | --- | -------------------------------------------------------------------- | -------------------------------------------------------------------- | -------------------- |
-| 00  | [Current State](0_0_current_state_problem.mmd)                       | Illustrates the current complexity problem that developers face      |                      |
-| 01  | [Component Descriptions](0_1_component_descriptions.mmd)             | Detailed component descriptions with responsibilities and interfaces | [§5;]                |
+| 0.0 | [Current State](0_0_current_state_problem.mmd)                       | Illustrates the current complexity problem that developers face      |                      |
+| 0.1 | [Component Descriptions](0_1_component_descriptions.mmd)             | Detailed component descriptions with responsibilities and interfaces | [§5;]                |
 | 1   | [Overall Architecture](1_overall_architecture.mmd)                   | High-level architecture showing all components                       | [§4.1, §4.2;]        |
 | 2   | [Metadata Schema](2_metadata_schema.mmd)                             | Structure of the metadata schema with allowed values                 | [§3.2;]              |
 | 3   | [Telegram Events Flow](3_use_case_telegram_events.mmd)               | Data flow for Telegram Mini-App quests/events                        | [§3.3;]              |
