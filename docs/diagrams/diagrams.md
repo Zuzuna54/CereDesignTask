@@ -1,0 +1,59 @@
+# Unified Data Ingestion SDK/API: Diagrams Index
+
+This document serves as an index for all the Mermaid diagrams created for the Unified Data Ingestion SDK/API architecture project.
+
+## Overview of Diagrams
+
+| #   | Diagram Name                                                         | Description                                                          | Requirements Covered         |
+| --- | -------------------------------------------------------------------- | -------------------------------------------------------------------- | ---------------------------- |
+| 1   | [Overall Architecture](1_overall_architecture.mmd)                   | High-level architecture showing all components                       | [`assignmnt.md` §4.1, §4.2;] |
+| 2   | [Metadata Schema](2_metadata_schema.mmd)                             | Structure of the metadata schema with allowed values                 | [`assignmnt.md` §3.2;]       |
+| 3   | [Telegram Events Flow](3_use_case_telegram_events.mmd)               | Data flow for Telegram Mini-App quests/events                        | [`assignmnt.md` §3.3;]       |
+| 3.1 | [Telegram Messages Flow](3_1_use_case_telegram_messages.mmd)         | Data flow for Telegram messages                                      | [`assignmnt.md` §3.3;]       |
+| 4   | [Drone Telemetry Flow](4_use_case_drone_telemetry.mmd)               | Data flow for Drone Telemetry                                        | [`assignmnt.md` §3.3;]       |
+| 5   | [Drone Video Flow](5_use_case_drone_video.mmd)                       | Data flow for Drone Video Stream chunks and events                   | [`assignmnt.md` §3.3;]       |
+| 6   | [Batch Mode](6_batch_mode.mmd)                                       | Batching component options and considerations                        | [`assignmnt.md` §3.2, §4.1;] |
+| 7   | [Error Handling & Observability](7_error_handling_observability.mmd) | Error handling strategies and observability framework                | [`assignmnt.md` §4.1, §4.2;] |
+| 8   | [Deployment Options](8_deployment_options.mmd)                       | Deployment topology options                                          | [`assignmnt.md` §4.2, §5;]   |
+| 9   | [Testing Matrix](9_testing_matrix.mmd)                               | Testing approach and scenarios                                       | [`assignmnt.md` §4.1;]       |
+| 10  | [Security Diagram](11_security_diagram.mmd)                          | Security architecture including auth, authz and validation           | [`assignmnt.md` §4.2;]       |
+| 11  | [Performance Benchmarks](12_performance_benchmarks.mmd)              | Performance metrics, SLAs and scaling thresholds                     | [`assignmnt.md` §4.2;]       |
+| 12  | [Migration Plan](13_migration_plan.mmd)                              | Enhanced migration strategy with comprehensive contingencies         | [`assignmnt.md` §5;]         |
+| 13  | [Component Descriptions](component_descriptions.mmd)                 | Detailed component descriptions with responsibilities and interfaces | [`assignmnt.md` §5;]         |
+
+## How to Use These Diagrams
+
+These diagrams are designed to be viewed in sequence from 1 to 14, as they progress from high-level architecture to implementation details. However, they can also be consulted individually based on specific needs:
+
+- For a general overview of the system: Start with Diagram 1
+- For detailed component descriptions: See Diagram 13
+- For metadata structure details: See Diagram 2
+- For understanding data flows for specific use cases: See Diagrams 3, 3.1, 4-5
+- For implementation considerations: See Diagrams 6-8
+- For planning and testing strategy: See Diagram 9
+- For project execution planning: See Diagrams 10 and 12
+- For security and performance specifications: See Diagrams 10 and 11
+
+## Open Questions Highlighted
+
+Throughout the diagrams, open questions and areas requiring clarification are marked with "❓" symbols.
+
+## Rendering the Diagrams
+
+These diagrams are written in Mermaid format (`.mmd`). To render them:
+
+1. Use a Mermaid-compatible viewer or editor
+2. Use the Mermaid Live Editor (https://mermaid.live)
+3. Use built-in Mermaid support in GitHub, Visual Studio Code, or other tools
+
+## Next Steps
+
+After reviewing these diagrams:
+
+1. Address the open questions with teammates
+2. Finalize the architecture based on feedback
+3. Create the complete architecture document as outlined in [`dev.md` #8]
+
+## References
+
+- [`assignmnt.md`](../assignmnt.md): Main assignment and requirements

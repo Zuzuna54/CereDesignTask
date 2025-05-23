@@ -1,0 +1,65 @@
+
+flowchart TD
+    classDef component fill:#f9f9f9,stroke:#333,stroke-width:1px
+    classDef storage fill:#e1f5fe,stroke:#0277bd,stroke-width:1px
+    classDef queue fill:#fff3e0,stroke:#ef6c00,stroke-width:1px
+    classDef question fill:#ffebee,stroke:#c62828,stroke-width:1px,stroke-dasharray: 5 5
+    
+    %% Main Flow
+    Client[Client Application] --> UnifiedSDK
+    UnifiedSDK["Unified SDK/API"] --> RulesInterpreter
+    RulesInterpreter[Rules Interpreter] --> Dispatcher
+    Dispatcher[Dispatcher] --> Orchestrator
+    
+    %% Batch Flow
+    Orchestrator[Orchestrator] -->|"dataCloudWriteMode: batch"| BatchDecision{Is Batching<br>Enabled?}
+    BatchDecision -->|Yes| BatchingSystem
+    BatchDecision -->|No| DirectWrite
+    
+    %% Batch Components
+    subgraph BatchingSystem["Batching System (Options)"]
+        direction TB
+        
+        subgraph Approach1["Approach 1: Local SDK Buffer"]
+            LocalBuffer[Local Buffer] --> FlushTimer[Periodic Flush<br>or Size Threshold]
+        end
+        
+        subgraph Approach2["Approach 2: Queue-Based (Recommended)"]
+            MessageQueue[(Message Queue)]:::queue
+            BatchProcessor[Batch Processor Service]
+            MessageQueue --> BatchProcessor
+        end
+        
+        subgraph Approach3["Approach 3: Microservice"]
+            BatchAPI[Batch Ingestion API]
+        end
+    end
+    
+    %% Direct Write
+    DirectWrite[Direct Write to Data Cloud] --> DataCloudSDK
+    
+    %% Final Destinations
+    DataCloudSDK[Data Cloud SDK] --> DataCloud[(Data Cloud)]:::storage
+    
+    %% Batch Connections
+    Approach1 --> DataCloudSDK
+    BatchProcessor --> DataCloudSDK
+    BatchAPI --> DataCloudSDK
+    
+    %% Questions
+    BatchQ1["❓ Is batching required for MVP<br>or can it be feature-flagged?"]:::question
+    BatchQ2["❓ What are the batch size and interval<br>requirements?"]:::question
+    BatchQ3["❓ Where should batching occur?<br>(SDK, central service, etc.)"]:::question
+    BatchQ4["❓ How to handle failures<br>in batched data?"]:::question
+    
+    BatchingSystem --- BatchQ1
+    BatchingSystem --- BatchQ2
+    BatchingSystem --- BatchQ3
+    BatchingSystem --- BatchQ4
+    
+    %% Notes
+    BatchAdv[Advantages of batching:<br>1. Reduced API calls<br>2. Lower overhead<br>3. Better throughput<br>for high-volume data]
+    BatchDis[Disadvantages:<br>1. Increased complexity<br>2. Delayed persistence<br>3. Requires monitoring<br>of batch queue depths]
+    
+    BatchingSystem -..- BatchAdv
+    BatchingSystem -..- BatchDis

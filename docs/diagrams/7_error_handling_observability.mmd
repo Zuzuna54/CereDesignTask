@@ -1,0 +1,77 @@
+
+flowchart TD
+    classDef component fill:#f9f9f9,stroke:#333,stroke-width:1px
+    classDef error fill:#ffebee,stroke:#c62828,stroke-width:1px
+    classDef success fill:#e8f5e9,stroke:#2e7d32,stroke-width:1px
+    classDef observability fill:#e1f5fe,stroke:#0277bd,stroke-width:1px
+    
+    %% Main Flow
+    Client[Client Application] -->|Request with<br>correlationId| UnifiedSDK
+    
+    subgraph UnifiedLayer["Unified Data Ingestion Layer"]
+        UnifiedSDK["Unified SDK/API"]
+        RulesInterpreter[Rules Interpreter]
+        Dispatcher[Dispatcher]
+        Orchestrator[Orchestrator / Error Handler]
+        
+        %% Normal Flow
+        UnifiedSDK -->|Log: Request received| RulesInterpreter
+        RulesInterpreter --> Dispatcher
+        Dispatcher --> Orchestrator
+        Orchestrator -->|Write operations| BackendSystems
+        BackendSystems --> Orchestrator
+        Orchestrator --> Dispatcher
+        Dispatcher --> UnifiedSDK
+        UnifiedSDK -->|Response| Client
+    end
+    
+    %% Backend Systems
+    subgraph BackendSystems[Backend Systems]
+        DataCloudSDK[Data Cloud SDK]
+        ActivitySDK[Activity SDK]
+        HttpAPI[HTTP API]
+    end
+    
+    %% Error Paths
+    BackendSystems -->|Error| ErrorHandler
+    
+    %% Error Handling
+    subgraph ErrorHandler[Error Handling Strategies]
+        ErrorDetection{Detect Error Type}
+        
+        ErrorDetection -->|Transient| RetryStrategy[Apply Retry Strategy<br>with Backoff]
+        ErrorDetection -->|Permanent| ErrorResponse[Return Error<br>to Client]
+        ErrorDetection -->|Partial Success| CompensationAction[Execute Compensation<br>Action if Needed]
+        
+        RetryStrategy -->|Max Retries<br>Exceeded| ErrorResponse
+        RetryStrategy -->|Retry| Orchestrator
+        CompensationAction -->|Cleanup| BackendSystems
+    end
+    
+    %% Observability
+    subgraph Observability["Observability Layer"]
+        StructuredLogs[(Structured Logs)]:::observability
+        Metrics[(Metrics)]:::observability
+        Alerts[(Alerts)]:::observability
+    end
+    
+    %% Log Points
+    UnifiedSDK -.->|Log: Request received<br>correlationId| StructuredLogs
+    RulesInterpreter -.->|Log: Processing rules<br>applied| StructuredLogs
+    Orchestrator -.->|Log: Write operations<br>transaction ID| StructuredLogs
+    BackendSystems -.->|Log: Backend responses<br>Data Cloud hash| StructuredLogs
+    ErrorHandler -.->|Log: Error details<br>retry attempts| StructuredLogs
+    
+    %% Metrics
+    Orchestrator -.->|Metric: Ingest latency| Metrics
+    BackendSystems -.->|Metric: Error count<br>per backend| Metrics
+    RetryStrategy -.->|Metric: Retry count| Metrics
+    
+    %% Questions and Concerns
+    AtomicityQ["❓ Partial success acceptable?<br>❓ Need compensation/rollback?"]
+    IdempotencyQ["❓ Exact idempotency requirements?<br>❓ How to detect duplicates?"]
+    ObservabilityQ["❓ Required metrics for MVP?<br>❓ Preferred monitoring stack?"]
+    
+    CompensationAction --- AtomicityQ
+    UnifiedSDK --- IdempotencyQ
+    Observability --- ObservabilityQ
