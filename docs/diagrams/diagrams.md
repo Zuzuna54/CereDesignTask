@@ -52,8 +52,5 @@ After reviewing these diagrams:
 
 1. Address the open questions with teammates
 2. Finalize the architecture based on feedback
-3. Create the complete architecture document as outlined in [`dev.md` #8]
+3. Create the complete architecture document
 
-## References
-
-- [`assignmnt.md`](../assignmnt.md): Main assignment and requirements
