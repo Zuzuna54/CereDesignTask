@@ -385,7 +385,7 @@ The framework demonstrates how performance requirements drive:
 
 - **Testing Matrix** (Diagram 9): Performance testing scenarios
 - **Error Handling** (Diagram 7): Performance impact of error handling
-- **Security** (Diagram 11): Security overhead on performance
+- **Security** (Diagram 10): Security overhead on performance
 
 ## Next Steps
 
@@ -393,7 +393,6 @@ After understanding performance benchmarks:
 
 1. Review **Testing Matrix** (Diagram 9) to see performance testing integration
 2. Study **Deployment Options** (Diagram 8) to understand performance implications
-3. Examine **Migration Plan** (Diagram 13) to understand performance during migration
 4. Check **Error Handling** (Diagram 7) for performance impact of error scenarios
 
 This performance framework ensures that the Unified Data Ingestion SDK/API delivers **predictable, high-performance service** that meets business requirements while providing operational visibility and automatic optimization.

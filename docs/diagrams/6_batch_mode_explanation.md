@@ -254,13 +254,12 @@ Batching addresses **high-volume data scenarios**:
 
 - **Architecture Overview** (Diagram 1): Shows where batching fits in overall system
 - **Drone Telemetry** (Diagram 4): Shows alternative to real-time telemetry processing
-- **Performance Benchmarks** (Diagram 12): Shows performance improvements from batching
+- **Performance Benchmarks** (Diagram 11): Shows performance improvements from batching
 
 ### Testing Requirements
 
 - **Testing Matrix** (Diagram 9): Must validate batching scenarios
 - **Error Handling** (Diagram 7): Must handle batch processing failures
-- **Migration Plan** (Diagram 13): Must include batching rollout strategy
 
 ## Next Steps
 

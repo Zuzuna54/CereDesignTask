@@ -305,9 +305,7 @@ Each approach includes:
 
 After understanding deployment options:
 
-1. Review **Performance Benchmarks** (Diagram 12) to understand performance targets
-2. Study **Security Diagram** (Diagram 11) to understand security implications of each approach
-3. Examine **Migration Plan** (Diagram 13) to understand deployment migration strategy
-4. Check **Implementation Roadmap** (Diagram 10) to understand deployment timeline
+1. Review **Performance Benchmarks** (Diagram 11) to understand performance targets
+2. Study **Security Diagram** (Diagram 10) to understand security implications of each approach
 
 This deployment options analysis provides the **strategic foundation** for making informed infrastructure decisions that align with organizational capabilities and requirements.

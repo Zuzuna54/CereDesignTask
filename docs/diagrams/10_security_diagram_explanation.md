@@ -358,20 +358,18 @@ rate_limits:
 
 - **Deployment Options** (Diagram 8): Security varies by deployment approach
 - **Error Handling** (Diagram 7): Security-aware error handling
-- **Performance Benchmarks** (Diagram 12): Security impact on performance
+- **Performance Benchmarks** (Diagram 11): Security impact on performance
 
 ### Security Testing
 
 - **Testing Matrix** (Diagram 9): Security testing scenarios
-- **Migration Plan** (Diagram 13): Security considerations during migration
 
 ## Next Steps
 
 After understanding security architecture:
 
 1. Review **Deployment Options** (Diagram 8) to understand security implications of each approach
-2. Study **Performance Benchmarks** (Diagram 12) to understand security overhead
-3. Examine **Migration Plan** (Diagram 13) to understand security migration strategy
+2. Study **Performance Benchmarks** (Diagram 11) to understand security overhead
 4. Check **Testing Matrix** (Diagram 9) for security testing requirements
 
 This security architecture provides **enterprise-grade protection** while maintaining the performance and usability requirements of the Unified Data Ingestion SDK/API system.

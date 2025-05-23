@@ -277,12 +277,11 @@ For partial success scenarios:
 
 - **Architecture Overview** (Diagram 1): Shows where error handling fits in overall system
 - **Use Case Diagrams** (3-5): Show how errors are handled in specific scenarios
-- **Performance Benchmarks** (Diagram 12): Show acceptable error rates and latencies
+- **Performance Benchmarks** (Diagram 11): Show acceptable error rates and latencies
 
 ### Testing Requirements
 
 - **Testing Matrix** (Diagram 9): Must validate error handling scenarios
-- **Migration Plan** (Diagram 13): Must include error handling during migration
 
 ## Next Steps
 
@@ -290,7 +289,6 @@ After understanding error handling:
 
 1. Review **Testing Matrix** (Diagram 9) to see error scenario validation
 2. Study **Performance Benchmarks** (Diagram 12) for error rate and latency targets
-3. Examine **Implementation Roadmap** (Diagram 10) for error handling development phases
-4. Check **Migration Plan** (Diagram 13) for error handling during migration
+
 
 This diagram demonstrates that the system includes **enterprise-grade error handling and observability**, ensuring reliable operation and providing the visibility needed for operational excellence.

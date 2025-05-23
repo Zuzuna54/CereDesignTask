@@ -86,12 +86,12 @@ The current system forces developers to understand **3 different approaches**:
 
 ### 6 Critical Issues
 
-1. **👨‍💻 Developer Complexity**: Must learn 3 different APIs
-2. **🔄 Inconsistent Patterns**: Different interfaces for similar operations
-3. **⚙️ Client-Side Logic**: Routing decisions embedded in applications
-4. **🔧 Maintenance Burden**: Updates require changing multiple apps
-5. **❗ Error Handling**: Different error patterns per SDK
-6. **📊 Monitoring Gaps**: No unified observability
+1. ** Developer Complexity**: Must learn 3 different APIs
+2. **Inconsistent Patterns**: Different interfaces for similar operations
+3. **Client-Side Logic**: Routing decisions embedded in applications
+4. **Maintenance Burden**: Updates require changing multiple apps
+5. **Error Handling**: Different error patterns per SDK
+6. **Monitoring Gaps**: No unified observability
 
 ## Project Relevance
 
@@ -121,26 +121,6 @@ The diagram supports the business case by showing:
 - **Onboarding Friction**: New developers must learn multiple systems
 - **Error Susceptibility**: Complex routing increases chance of mistakes
 
-## Usage in Presentations
-
-### 5-Minute Problem Overview
-
-This diagram is perfect for the **"Problem and Solution Overview"** section because it:
-
-- Quickly communicates the complexity without technical jargon
-- Uses visual metaphors (question marks, multiple paths) that are intuitive
-- Shows real-world applications (Telegram, Drone, Video) that stakeholders recognize
-- Establishes clear pain points that the solution will address
-
-### Stakeholder Communication
-
-The diagram helps **non-technical stakeholders** understand:
-
-- Why developers are struggling with the current system
-- Why a unified approach is necessary
-- How complexity translates to business costs
-- The scope of applications affected
-
 ## Open Questions Raised
 
 ### Business Impact
@@ -154,5 +134,3 @@ The diagram helps **non-technical stakeholders** understand:
 - How many applications are using sub-optimal routing due to complexity?
 - What's the maintenance burden of supporting three different codepaths?
 - How does the complexity affect testing and debugging?
-
-This diagram effectively establishes the **"problem space"** that the Unified Data Ingestion SDK/API is designed to solve, making it an essential piece for presentations and design discussions.

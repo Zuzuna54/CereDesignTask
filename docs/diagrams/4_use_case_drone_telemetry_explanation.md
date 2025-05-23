@@ -267,7 +267,7 @@ This use case demonstrates the **greatest developer benefit**:
 
 - **Orchestrator** (Architecture Diagram 1): Shows how parallel execution is handled
 - **Error Handling** (Diagram 7): Shows how partial failures are managed
-- **Performance Benchmarks** (Diagram 12): Shows latency targets for telemetry
+- **Performance Benchmarks** (Diagram 11): Shows latency targets for telemetry
 
 ### Testing Requirements
 

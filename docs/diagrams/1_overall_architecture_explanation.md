@@ -82,7 +82,7 @@ The diagram illustrates a **layered architecture** with clear separation of conc
 - Makes it easy to modify routing rules without client changes
 - Simplifies testing and validation
 
-### 4. Optional Batching Component
+### 4. Batching Component
 
 **Decision**: Make batching a separate, optional component  
 **Rationale**:

@@ -266,13 +266,12 @@ This use case demonstrates the **full flexibility** of the metadata-driven archi
 
 - **Metadata Schema** (Diagram 2): Shows how "skip" mode works
 - **Architecture Overview** (Diagram 1): Shows routing to different systems
-- **Performance Benchmarks** (Diagram 12): Shows latency targets for video
+- **Performance Benchmarks** (Diagram 11): Shows latency targets for video
 
 ### Testing Requirements
 
 - **Testing Matrix** (Diagram 9): Must validate two-phase processing
 - **Error Handling** (Diagram 7): Must handle failures in multi-phase workflows
-- **Migration Plan** (Diagram 13): Must account for complex video workflows
 
 ## Next Steps
 
@@ -280,7 +279,7 @@ After understanding this use case:
 
 1. Review **Batch Mode Diagram** (Diagram 6) for alternative video processing patterns
 2. Study **Error Handling Diagram** (Diagram 7) for multi-phase failure scenarios
-3. Examine **Performance Benchmarks** (Diagram 12) for video processing targets
+3. Examine **Performance Benchmarks** (Diagram 11) for video processing targets
 4. Review **Testing Matrix** (Diagram 9) for two-phase validation scenarios
 
 This use case demonstrates the **most sophisticated processing pattern** in the system, proving that the Unified SDK can handle complex workflows while maintaining simplicity for developers.

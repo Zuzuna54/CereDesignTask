@@ -200,10 +200,9 @@ await unifiedSDK.writeData(messageData, telegramMessageMetadata);
 - **Architecture Overview** (Diagram 1): Shows how this fits into overall system
 - **Error Handling** (Diagram 7): Shows how errors are handled consistently
 
-### Testing and Migration
+### Testing
 
 - **Testing Matrix** (Diagram 9): Includes validation scenarios for message processing
-- **Migration Plan** (Diagram 13): Includes specific steps for Telegram bot migration
 
 ## Next Steps
 
