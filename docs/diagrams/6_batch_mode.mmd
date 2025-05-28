@@ -1,9 +1,9 @@
-
 flowchart TD
     classDef component fill:#f9f9f9,stroke:#333,stroke-width:1px
     classDef storage fill:#e1f5fe,stroke:#0277bd,stroke-width:1px
     classDef queue fill:#fff3e0,stroke:#ef6c00,stroke-width:1px
-    classDef question fill:#ffebee,stroke:#c62828,stroke-width:1px,stroke-dasharray: 5 5
+    classDef service fill:#e8f5e8,stroke:#2e7d32,stroke-width:1px
+    classDef streaming fill:#f3e5f5,stroke:#7b1fa2,stroke-width:1px
     
     %% Main Flow
     Client[Client Application] --> UnifiedSDK
@@ -11,55 +11,64 @@ flowchart TD
     RulesInterpreter[Rules Interpreter] --> Dispatcher
     Dispatcher[Dispatcher] --> Orchestrator
     
-    %% Batch Flow
+    %% Batch Flow Decision
     Orchestrator[Orchestrator] -->|"dataCloudWriteMode: batch"| BatchDecision{Is Batching<br>Enabled?}
-    BatchDecision -->|Yes| BatchingSystem
+    BatchDecision -->|Yes| BatchIngestionService
     BatchDecision -->|No| DirectWrite
     
-    %% Batch Components
-    subgraph BatchingSystem["Batching System (Options)"]
+    %% Batch Ingestion Service (Separate Service)
+    subgraph BatchIngestionService["Batch Ingestion Service (Part of Indexing Flow)"]
         direction TB
         
-        subgraph Approach1["Approach 1: Local SDK Buffer"]
-            LocalBuffer[Local Buffer] --> FlushTimer[Periodic Flush<br>or Size Threshold]
+        %% Streaming Engine with Persistence
+        subgraph StreamingEngine["Streaming Engine (Kafka/NATS)"]
+            MessageQueue[(Message Queue<br>Persistent Storage)]:::queue
+            StreamProcessor[Stream Processor<br>Modified Kafka Streams]:::streaming
         end
         
-        subgraph Approach2["Approach 2: Queue-Based (Recommended)"]
-            MessageQueue[(Message Queue)]:::queue
-            BatchProcessor[Batch Processor Service]
-            MessageQueue --> BatchProcessor
+        %% Batch Processing Logic
+        subgraph BatchLogic["Batch Processing Logic"]
+            BatchTrigger{Batch Trigger<br>Conditions}:::service
+            WindowSize[Window Size<br>Trigger]:::service
+            BatchSize[Batch Size<br>Trigger]:::service
+            BatchProcessor[Batch Processor]:::service
         end
         
-        subgraph Approach3["Approach 3: Microservice"]
-            BatchAPI[Batch Ingestion API]
+        %% Retry Mechanism
+        subgraph RetrySystem["Retry System"]
+            RetryLogic[Simple Retry Logic<br>1 Batch = 1 Payload = 1 Transaction]:::service
+            FailureHandler[Failure Handler]:::service
         end
+        
+        %% Flow within service
+        MessageQueue --> StreamProcessor
+        StreamProcessor --> BatchTrigger
+        BatchTrigger --> WindowSize
+        BatchTrigger --> BatchSize
+        WindowSize --> BatchProcessor
+        BatchSize --> BatchProcessor
+        BatchProcessor --> RetryLogic
+        RetryLogic --> FailureHandler
+        FailureHandler -->|Retry| BatchProcessor
+        FailureHandler -->|Success| DataCloudSDK
     end
     
-    %% Direct Write
+    %% Direct Write Path
     DirectWrite[Direct Write to Data Cloud] --> DataCloudSDK
     
-    %% Final Destinations
+    %% Final Destination
     DataCloudSDK[Data Cloud SDK] --> DataCloud[(Data Cloud)]:::storage
     
-    %% Batch Connections
-    Approach1 --> DataCloudSDK
-    BatchProcessor --> DataCloudSDK
-    BatchAPI --> DataCloudSDK
+    %% Configuration & Monitoring
+    subgraph Configuration["Batch Configuration"]
+        BatchConfig[Batch Parameters:<br>• Window Size: Time-based trigger<br>• Batch Size: Count/size-based trigger<br>• Queue Depth: ~10MB/15min per session<br>• Whichever reached first triggers flush]
+    end
     
-    %% Questions
-    BatchQ1["❓ Is batching required for MVP<br>or can it be feature-flagged?"]:::question
-    BatchQ2["❓ What are the batch size and interval<br>requirements?"]:::question
-    BatchQ3["❓ Where should batching occur?<br>(SDK, central service, etc.)"]:::question
-    BatchQ4["❓ How to handle failures<br>in batched data?"]:::question
+    subgraph Monitoring["Monitoring & Alerting"]
+        BatchMonitoring[Standard Monitoring:<br>• Queue depth monitoring<br>• Processing latency<br>• Failure rates<br>• Throughput metrics]
+    end
     
-    BatchingSystem --- BatchQ1
-    BatchingSystem --- BatchQ2
-    BatchingSystem --- BatchQ3
-    BatchingSystem --- BatchQ4
+    BatchIngestionService -..- BatchConfig
+    BatchIngestionService -..- BatchMonitoring
     
-    %% Notes
-    BatchAdv[Advantages of batching:<br>1. Reduced API calls<br>2. Lower overhead<br>3. Better throughput<br>for high-volume data]
-    BatchDis[Disadvantages:<br>1. Increased complexity<br>2. Delayed persistence<br>3. Requires monitoring<br>of batch queue depths]
-    
-    BatchingSystem -..- BatchAdv
-    BatchingSystem -..- BatchDis
+

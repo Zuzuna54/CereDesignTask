@@ -2,7 +2,7 @@
 
 ## Diagram Overview
 
-This flowchart diagram illustrates the **batching system architecture** for the Unified Data Ingestion SDK/API. It shows how the system handles high-volume data ingestion through batching when `dataCloudWriteMode: "batch"` is specified, providing an alternative to real-time processing for efficiency optimization.
+This flowchart diagram illustrates the **finalized batching system architecture** for the Unified Data Ingestion SDK/API. It shows how the system handles high-volume data ingestion through a queue-based batching service when `dataCloudWriteMode: "batch"` is specified, providing an optimized alternative to real-time processing.
 
 ## What This Diagram Shows
 
@@ -13,32 +13,25 @@ The diagram shows how the system **decides between batched and direct processing
 1. **Client Request**: Application sends data with batching metadata
 2. **Rules Processing**: System interprets `dataCloudWriteMode: "batch"`
 3. **Batching Decision**: Orchestrator checks if batching is enabled
-4. **Route Selection**: Data flows either to batching system or direct write
+4. **Route Selection**: Data flows either to batch ingestion service or direct write
 
-### Three Batching Approaches
+### Finalized Queue-Based Architecture
 
-The diagram presents **three possible batching implementations**:
+The diagram presents the **selected queue-based implementation** as a separate service:
 
-#### Approach 1: Local SDK Buffer
+#### Batch Ingestion Service (Part of Indexing Flow)
 
-- **Implementation**: Buffer data within the SDK client
-- **Trigger**: Periodic flush based on time or size thresholds
-- **Pros**: Simple, low latency, no additional infrastructure
-- **Cons**: Limited reliability, lost data if client crashes
+- **Implementation**: Separate service using streaming engine (Kafka/NATS)
+- **Persistence**: Built-in persistence layer for reliability
+- **Processing**: Modified Kafka Streams for stream processing
+- **Triggers**: Dual trigger system (window size OR batch size - whichever reached first)
+- **Retry**: Simple retry logic (1 batch = 1 payload = 1 transaction)
 
-#### Approach 2: Queue-Based (Recommended)
+#### Key Components
 
-- **Implementation**: Message queue with dedicated batch processor service
-- **Trigger**: Batch processor consumes from queue on schedule
-- **Pros**: Reliable, scalable, fault-tolerant
-- **Cons**: Additional infrastructure, slightly higher latency
-
-#### Approach 3: Microservice
-
-- **Implementation**: Dedicated batch ingestion API service
-- **Trigger**: Service handles batching logic independently
-- **Pros**: Service isolation, independent scaling
-- **Cons**: Most complex, additional service to maintain
+1. **Streaming Engine**: Kafka/NATS with persistent storage
+2. **Batch Processing Logic**: Dual trigger conditions
+3. **Retry System**: Simple failure handling with retries
 
 ## Assignment Requirements Addressed
 
@@ -46,228 +39,202 @@ The diagram presents **three possible batching implementations**:
 
 - **FR-2: Metadata-Driven Processing**: Batching activated through metadata specification
 - **Performance Optimization**: Reduces overhead for high-volume data ingestion
-- **Flexibility**: Optional feature that can be enabled/disabled per use case
+- **Reliability**: Queue-based approach with persistence provides fault tolerance
 
 ### Non-Functional Requirements
 
-- **Scalability**: Batching improves system throughput for high-volume scenarios
-- **Efficiency**: Reduces API call overhead and improves resource utilization
-- **Reliability**: Queue-based approach provides fault tolerance
+- **Scalability**: Separate service can scale independently
+- **Efficiency**: Dual trigger system optimizes for both latency and throughput
+- **Reliability**: Kafka/NATS provides enterprise-grade reliability
 
 ### Architecture Requirements
 
-- **Optional Component**: Diagram shows batching as optional/feature-flagged
-- **Integration**: Fits seamlessly into existing architecture without breaking changes
+- **Required for MVP**: Batching is now required for the MVP release
+- **Separate Service**: Implemented as part of the indexing flow
+- **Integration**: Seamlessly integrates with existing architecture
 
-## Design Decisions Made
+## Finalized Design Decisions
 
-### 1. Feature Flag Approach
+### 1. MVP Requirement
 
-**Decision**: Make batching optional and feature-flagged  
+**Decision**: Batching is required for MVP  
 **Rationale**:
 
-- **MVP Simplicity**: Can launch without batching complexity
-- **Gradual Rollout**: Enable batching for specific use cases as needed
-- **Risk Mitigation**: Avoid early complexity that might delay launch
-- **Flexibility**: Different clients can opt into batching based on their needs
+- **Business Need**: High-volume use cases require batching from launch
+- **Performance**: Critical for meeting throughput requirements
+- **User Experience**: Needed to support expected usage patterns
 
-### 2. Queue-Based Recommendation
+### 2. Queue-Based Implementation Selected
 
-**Decision**: Recommend Approach 2 (queue-based) for production  
+**Decision**: Implement queue-based approach as separate service  
 **Rationale**:
 
-- **Reliability**: Message queues provide durability and fault tolerance
-- **Scalability**: Can scale batch processing independently
-- **Monitoring**: Queue depth provides observability into batching performance
-- **Industry Standard**: Well-understood pattern for high-volume processing
+- **Reliability**: Kafka/NATS provides enterprise-grade durability
+- **Scalability**: Can scale batch processing independently of main flow
+- **Monitoring**: Queue depth provides clear observability
+- **Industry Standard**: Well-proven pattern for high-volume processing
 
-### 3. Metadata-Driven Activation
+### 3. Dual Trigger System
 
-**Decision**: Control batching through processing metadata  
+**Decision**: Use both window size and batch size triggers  
 **Rationale**:
 
-- **Consistent Interface**: Same metadata pattern as other processing options
-- **Per-Request Control**: Clients can choose batching per data type
-- **Runtime Flexibility**: Can modify batching behavior without code changes
-- **Clear Intent**: Explicit declaration of batching requirements
+- **Flexibility**: Optimizes for both latency and throughput
+- **Predictable Behavior**: Clear trigger conditions
+- **Resource Management**: Prevents unbounded memory usage
+- **Performance**: Balances efficiency with responsiveness
 
-### 4. Multiple Implementation Options
+### 4. Simple Retry Strategy
 
-**Decision**: Document multiple approaches rather than prescribing one  
+**Decision**: Implement simple retry logic (1 batch = 1 payload = 1 transaction)  
 **Rationale**:
 
-- **Context Dependent**: Different organizations have different constraints
-- **Evolution Path**: Can start simple and evolve to more sophisticated approaches
-- **Trade-off Visibility**: Makes architectural trade-offs explicit
-- **Implementation Flexibility**: Allows choice based on operational capabilities
+- **Simplicity**: Easier to implement and debug
+- **Reliability**: Clear transaction boundaries
+- **Performance**: Minimal overhead
+- **Existing Solution**: Leverages existing Kafka Streams solution
 
 ## Process Description
 
-### Batching Workflow
+### Finalized Batching Workflow
 
-This diagram describes the **batching decision and processing flow**:
+This diagram describes the **implemented batching process**:
 
 1. **Request Reception**: Client sends data with `dataCloudWriteMode: "batch"`
 2. **Metadata Processing**: Rules Interpreter recognizes batching request
-3. **Batching Check**: Orchestrator checks if batching is enabled
-4. **Route Decision**: System routes to either batching system or fallback to direct write
-5. **Batch Processing**: Data accumulates until batch conditions met
-6. **Batch Execution**: Accumulated data sent to Data Cloud SDK in batch
-7. **Confirmation**: Success confirmations sent back to clients
+3. **Batching Check**: Orchestrator confirms batching is enabled
+4. **Service Routing**: Data flows to Batch Ingestion Service
+5. **Queue Storage**: Data stored in persistent message queue (Kafka/NATS)
+6. **Stream Processing**: Modified Kafka Streams processes incoming data
+7. **Trigger Evaluation**: System checks both window size and batch size conditions
+8. **Batch Execution**: When either trigger met, batch sent to Data Cloud SDK
+9. **Retry Handling**: Failed batches retried with simple retry logic
+10. **Confirmation**: Success confirmations sent back through the flow
 
-### Batch Triggers
+### Batch Trigger Configuration
 
-Different approaches use different batch triggers:
+**Dual Trigger System**:
 
-- **Size-Based**: Batch when accumulated data reaches size threshold
-- **Time-Based**: Batch when time interval expires
-- **Count-Based**: Batch when number of items reaches threshold
-- **Hybrid**: Combine multiple triggers for optimal batching
+- **Window Size**: Time-based trigger (configurable interval)
+- **Batch Size**: Count/size-based trigger (configurable threshold)
+- **First Trigger Wins**: Whichever condition reached first triggers the flush
+- **Queue Depth Limits**: ~10MB/15min per session (considered "unlimited" for most use cases)
 
-## Open Questions and Design Considerations
+## Implementation Specifications
 
-The diagram includes several open questions that need resolution:
+### Batch Parameters (Finalized)
 
-### 1. MVP Requirements
+- **Window Size**: Time-based trigger for maximum latency control
+- **Batch Size**: Count/size-based trigger for throughput optimization
+- **Queue Depth**: ~10MB/15min per session limit
+- **Trigger Logic**: Whichever reached first will trigger the batch flush
 
-**Question**: Is batching required for MVP or can it be feature-flagged?  
-**Impact**: Affects initial development scope and complexity  
-**Recommendation**: Feature-flag for gradual rollout after core functionality
+### Service Architecture
 
-### 2. Batch Parameters
+- **Location**: Separate service as part of indexing flow
+- **Technology**: Kafka/NATS streaming engine with persistence
+- **Processing**: Modified existing Kafka Streams solution
+- **Scaling**: Independent scaling from main ingestion flow
 
-**Question**: What are the batch size and interval requirements?  
-**Considerations**:
+### Failure Handling (Finalized)
 
-- **Latency vs. Throughput**: Larger batches = higher throughput, higher latency
-- **Memory Usage**: Batch size affects memory requirements
-- **Error Recovery**: Larger batches = more data at risk during failures
+- **Strategy**: Simple retries only
+- **Transaction Model**: 1 batch = 1 payload = 1 transaction
+- **Existing Solution**: Modify existing Kafka Streams-based solution
+- **No Complex Recovery**: No compensation or rollback mechanisms
 
-### 3. Implementation Location
+### Monitoring Requirements
 
-**Question**: Where should batching occur (SDK, central service, etc.)?  
-**Considerations**:
-
-- **Reliability**: Central service more reliable than client-side
-- **Latency**: Client-side batching has lower latency
-- **Operational Complexity**: Central service requires more infrastructure
-
-### 4. Failure Handling
-
-**Question**: How to handle failures in batched data?  
-**Considerations**:
-
-- **Partial Failures**: What if some items in batch fail?
-- **Retry Logic**: How to retry failed batches?
-- **Dead Letter Queues**: Where to send persistently failing data?
-
-## Advantages and Disadvantages
-
-### Batching Advantages
-
-1. **Reduced API Calls**: Fewer individual requests to downstream systems
-2. **Lower Overhead**: Amortized connection and processing costs
-3. **Better Throughput**: Higher overall data processing rate
-4. **Resource Efficiency**: Better utilization of downstream system resources
-
-### Batching Disadvantages
-
-1. **Increased Complexity**: Additional components and failure modes
-2. **Delayed Persistence**: Data not immediately stored (latency increase)
-3. **Monitoring Requirements**: Need to monitor batch queue depths and processing
-4. **Memory Usage**: Batching requires buffering data in memory
-
-## Use Case Applications
-
-### High-Volume Scenarios
-
-Batching is particularly beneficial for:
-
-- **Drone Telemetry**: High-frequency sensor data during cruise flight
-- **Video Processing**: Multiple video chunks from the same session
-- **Bulk Data Migration**: Large data migration projects
-- **Analytics Events**: High-volume user behavior tracking
-
-### Real-Time Scenarios
-
-Batching is NOT suitable for:
-
-- **Emergency Alerts**: Immediate processing required
-- **Real-Time Monitoring**: Instant availability needed
-- **Interactive Applications**: User-facing features requiring immediate feedback
+- **Standard Monitoring**: Common software monitoring practices
+- **Queue Depth**: Monitor batch queue depths
+- **Processing Latency**: Track batch processing times
+- **Failure Rates**: Monitor retry rates and success rates
+- **Throughput Metrics**: Track batching efficiency
 
 ## Technical Implementation Details
 
 ### Queue-Based Implementation
 
-For the recommended queue-based approach:
-
 ```typescript
-// Client-side usage
+// Client-side usage (unchanged)
 const result = await unifiedSDK.writeData(telemetryData, {
   processing: {
     dataCloudWriteMode: "batch",
     indexWriteMode: "realtime",
   },
-  batchOptions: {
-    maxBatchSize: 100,
-    maxWaitTime: 30000, // 30 seconds
-  },
 });
 
-// System routes to message queue
-// Batch processor consumes and writes to Data Cloud SDK
+// Batch Ingestion Service Configuration
+const batchConfig = {
+  windowSize: "15m", // Time-based trigger
+  batchSize: 1000, // Count-based trigger
+  maxQueueDepth: "10MB", // Per session limit
+  retryAttempts: 3, // Simple retry count
+  streamingEngine: "kafka", // Kafka/NATS choice
+};
 ```
 
-### Configuration Options
+### Service Integration
 
-- **Batch Size**: Maximum items per batch (e.g., 100 records)
-- **Time Interval**: Maximum wait time (e.g., 30 seconds)
-- **Queue Configuration**: Dead letter queues, retry policies
-- **Monitoring**: Queue depth alerts, processing rate metrics
+- **Input**: Receives data from Orchestrator
+- **Processing**: Kafka Streams-based batch processing
+- **Output**: Sends batches to Data Cloud SDK
+- **Monitoring**: Standard service monitoring and alerting
 
-## Relevance to Project
+## Business Impact
 
-### Performance Optimization
+### Performance Benefits
 
-Batching addresses **high-volume data scenarios**:
-
+- **Throughput**: Significantly improved for high-volume scenarios
 - **Cost Reduction**: Fewer API calls reduce operational costs
-- **Throughput Improvement**: Better resource utilization
-- **Scalability**: Handles traffic spikes more efficiently
+- **Resource Efficiency**: Better utilization of downstream systems
+- **Scalability**: Independent scaling handles traffic spikes
 
 ### Operational Benefits
 
-- **Resource Efficiency**: Reduces load on downstream systems
-- **Monitoring**: Centralized batching provides better observability
-- **Flexibility**: Can be tuned for different performance requirements
+- **Reliability**: Persistent queues prevent data loss
+- **Monitoring**: Clear visibility into batching performance
+- **Simplicity**: Simple retry strategy reduces complexity
+- **Proven Technology**: Kafka/NATS are battle-tested solutions
 
-### Migration Strategy
+## Use Case Applications
 
-- **Gradual Adoption**: Feature-flag allows testing with subset of traffic
-- **Performance Testing**: Can compare batched vs. real-time performance
-- **Rollback Capability**: Can disable batching if issues arise
+### Optimal Scenarios for Batching
+
+- **Drone Telemetry**: High-frequency sensor data during flight
+- **Video Processing**: Multiple video chunks from sessions
+- **Bulk Data Migration**: Large-scale data migration projects
+- **Analytics Events**: High-volume user behavior tracking
+- **IoT Data Streams**: Continuous sensor data ingestion
+
+### Direct Write Scenarios
+
+- **Emergency Alerts**: Immediate processing required
+- **Real-Time Monitoring**: Instant availability needed
+- **Interactive Applications**: User-facing features requiring immediate feedback
+- **Low-Volume Data**: When batching overhead exceeds benefits
 
 ## Integration with Other Diagrams
 
 ### Related Components
 
-- **Architecture Overview** (Diagram 1): Shows where batching fits in overall system
-- **Drone Telemetry** (Diagram 4): Shows alternative to real-time telemetry processing
-- **Performance Benchmarks** (Diagram 11): Shows performance improvements from batching
+- **Architecture Overview** (Diagram 1): Shows batch service in overall system
+- **Drone Telemetry** (Diagram 4): Shows batching for high-volume telemetry
+- **Error Handling** (Diagram 7): Shows batch failure handling
+- **Performance Benchmarks** (Diagram 12): Shows batching performance improvements
 
 ### Testing Requirements
 
-- **Testing Matrix** (Diagram 9): Must validate batching scenarios
-- **Error Handling** (Diagram 7): Must handle batch processing failures
+- **Testing Matrix** (Diagram 9): Must validate dual trigger scenarios
+- **Migration Plan** (Diagram 13): Must include batching service deployment
 
 ## Next Steps
 
-After understanding batching:
+After implementing batching:
 
-1. Review **Performance Benchmarks** (Diagram 12) to see batching benefits
-2. Study **Error Handling** (Diagram 7) for batch failure scenarios
-3. Examine **Testing Matrix** (Diagram 9) for batching validation
+1. Review **Error Handling** (Diagram 7) for batch failure scenarios
+2. Study **Performance Benchmarks** (Diagram 12) for batching performance targets
+3. Examine **Testing Matrix** (Diagram 9) for batching validation scenarios
 4. Check **Implementation Roadmap** (Diagram 10) for batching development phases
 
-This diagram shows that batching is a **powerful optimization** that can significantly improve system performance for high-volume scenarios while maintaining the same simple client interface.
+This diagram shows the **finalized batching architecture** that provides enterprise-grade performance optimization while maintaining simplicity and reliability through proven streaming technologies.
