@@ -20,6 +20,7 @@ This document serves as an index for all the Mermaid diagrams created for the Un
 | 9   | [Testing Matrix](9_testing_matrix.mmd)                               | Testing approach and scenarios                                       | [§4.1;]              |
 | 10  | [Security Diagram](10_security_diagram.mmd)                          | Security architecture including auth, authz and validation           | [§4.2;]              |
 | 11  | [Performance Benchmarks](11_performance_benchmarks.mmd)              | Performance metrics, SLAs and scaling thresholds                     | [§4.2;]              |
+| 12  | [Migration Plan](12_migration_plan.mmd)                              | Migration Approach for seamless swtich to new unified SDK/API        |                      |
 
 ## How to Use These Diagrams
 
